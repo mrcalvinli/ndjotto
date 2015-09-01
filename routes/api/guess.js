@@ -1,19 +1,39 @@
 var express = require('express');
 var router = express.Router();
 
-router.post('/', function(req, res) {
+var Errors = require('../../errors/errors');
+
+var JOTTO_WORD = "nudelta";
+
+
+/**
+ * Validate the guess before sending it through middleware
+ */
+var validateGuess = function(req, res, next) {
+    var guess = req.body.guess;
+
+    if (!guess) {
+        var err = Errors.guess.noInput;
+        res.status(err.status).send(err);
+    } else if (guess.length !== JOTTO_WORD.length) {
+        var err = Errors.guess.invalidLength;
+        res.status(err.status).send(err);
+    } else {
+        next();
+    }
+}
+
+router.post('/', validateGuess, function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     
     // Get guess
-    var guess = req.body.guess;
+    var guess = req.body.guess.toLowerCase();
 
     return res.status(200).send(getCorrectnessOfGuess(guess));
 });
 
 var getCorrectnessOfGuess = function(guess) {
-    var word = 'nudelta';
-
-    var expectedMap = getLetterToIndexMap(word);
+    var expectedMap = getLetterToIndexMap(JOTTO_WORD);
     var guessedMap = getLetterToIndexMap(guess);
 
     var numCorrectLetters = 0;
