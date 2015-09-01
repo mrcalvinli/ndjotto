@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 //TODO: create variables for public APIs here
 var routes = require('./routes/index');
+var guessApi = require('./routes/api/guess');
 
 var app = express();
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/api/guess', guessApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

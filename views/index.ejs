@@ -2,8 +2,34 @@
 <html>
 <head>
     <title>ND Jotto Puzzle</title>
+    <%- include partials/header.ejs %>
+
+    <script src='/javascripts/guess_controller.js'></script>
 </head>
-<body>
-    <p>Here is some random text.</p>
+<body ng-app='ndJottoApp' ng-controller='guessCtrl'>
+    <div class='page-container container'>
+        <div class='row'>
+            <div class='col-md-8'>
+                <h3>Make your guess</h3>
+                <form name='wordGuessForm' id = 'wordGuessForm' action='api/guess' method='post' class='form-inline'>
+                    <div class='form-group'>
+                        <input type='text' required='true' class='form-control' placeholder='Your Guess' id='guessInput'>
+                        <input type='submit' class='btn btn-default' value = 'Submit'>
+                    </div>
+                </form>
+                <table class='table'>
+                    <tr ng-repeat='guessResult in viewModel.guesses'>
+                        <td ng-bind='$index'></td>
+                        <td ng-bind='guessResult.guess'></td>
+                        <td ng-bind='guessResult.correctLetters'></td>
+                        <td ng-bind='guessResult.correctPositions'></td>
+                    </tr>
+                </table>
+            </div>
+            <div class='col-md-4'>
+                Adding great description of the game here.
+            </div>
+        </div>
+    </div>
 </body>
 </html>
