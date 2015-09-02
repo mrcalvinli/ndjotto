@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-var PASSWORD = 'youaretrash'
+var PasswordChecker = require('../../utils/password_checker');
 
 router.post('/', function(req, res) {
     var givenPassword = req.body.password;
 
     return res.status(200).send({
-        isCorrect: givenPassword === PASSWORD
+        isCorrect: PasswordChecker.isCorrectPassword(givenPassword)
     });
 });
 

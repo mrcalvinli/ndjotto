@@ -1,6 +1,16 @@
 var errors = {};
 var guess = errors.guess = {};
 
+//====== General errors ========================
+
+errors.unauthorized = {
+    status: 401,
+    name: 'NotAuthorized',
+    message: 'You are not authorized to see this classified information'
+};
+
+//====== Guess errors ==========================
+
 guess.noInput = {
     status: 400,
     name: 'NoInput',

@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 var Errors = require('../../errors/errors');
+var PasswordChecker = require('../../utils/password_checker');
 
 var JOTTO_WORD = "nudelta";
-
 
 /**
  * Validate the guess before sending it through middleware
@@ -22,6 +22,19 @@ var validateGuess = function(req, res, next) {
         next();
     }
 }
+
+router.get('/getword', function(req, res) {
+    var password = req.query.password;
+
+    if (PasswordChecker.isCorrectPassword(password)) {
+        res.status(200).send({
+            word: JOTTO_WORD
+        });
+    } else {
+        var err = Errors.unauthorized;
+        res.status(err.status).send(err);
+    }
+});
 
 router.post('/', validateGuess, function(req, res) {
     res.setHeader('Content-Type', 'application/json');
