@@ -1,3 +1,24 @@
+html, body {
+  background: black;
+  font-family: monospace, Consolas;
+  color: #00FF00;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+table {
+  width: 100%;
+}
+
+input, textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
 .page-container {
   max-width: 1170px;
   margin-left: auto;
