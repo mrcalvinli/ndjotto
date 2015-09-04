@@ -1,10 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+var WordChecker = require('../../utils/word_checker');
 var Errors = require('../../errors/errors');
-var PasswordChecker = require('../../utils/password_checker');
-
-var JOTTO_WORD = "nudelta";
 
 /**
  * Validate the guess before sending it through middleware
@@ -15,7 +13,7 @@ var validateGuess = function(req, res, next) {
     if (!guess) {
         var err = Errors.guess.noInput;
         res.status(err.status).send(err);
-    } else if (guess.length !== JOTTO_WORD.length) {
+    } else if (guess.length !== WordChecker.getWordLength()) {
         var err = Errors.guess.invalidLength;
         res.status(err.status).send(err);
     } else {
@@ -23,74 +21,13 @@ var validateGuess = function(req, res, next) {
     }
 }
 
-router.get('/getword', function(req, res) {
-    var password = req.query.password;
-
-    if (PasswordChecker.isCorrectPassword(password)) {
-        res.status(200).send({
-            word: JOTTO_WORD
-        });
-    } else {
-        var err = Errors.unauthorized;
-        res.status(err.status).send(err);
-    }
-});
-
 router.post('/', validateGuess, function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     
     // Get guess
     var guess = req.body.guess.toLowerCase();
 
-    return res.status(200).send(getCorrectnessOfGuess(guess));
+    return res.status(200).send(WordChecker.getCorrectnessOfGuess(guess));
 });
-
-var getCorrectnessOfGuess = function(guess) {
-    var expectedMap = getLetterToIndexMap(JOTTO_WORD);
-    var guessedMap = getLetterToIndexMap(guess);
-
-    var numCorrectLetters = 0;
-    var numInCorrectPosition = 0;
-    for (var guessedChar in guessedMap) {
-        if (expectedMap[guessedChar]) {
-            var expectedCharIndexList = expectedMap[guessedChar];
-            var guessedCharIndexList = guessedMap[guessedChar];
-
-            // Increment correct number of letters
-            numCorrectLetters += Math.min(guessedCharIndexList.length, expectedCharIndexList.length);
-
-            // Check correct placement
-            for (var index = 0; index < guessedCharIndexList.length; index++) {
-                var guessedCharIndex = guessedCharIndexList[index];
-                if (expectedCharIndexList.indexOf(guessedCharIndex) > -1) {
-                    numInCorrectPosition += 1;
-                }
-            }
-        }
-    }
-
-    return {
-        'correctLetters': numCorrectLetters,
-        'correctPositions': numInCorrectPosition
-    }
-}
-
-var getLetterToIndexMap = function(word) {
-    // Map word to dictionary
-    var letterToIndexMap = {};
-    for (var charIndex = 0; charIndex < word.length; charIndex++) {
-        var character = word[charIndex];
-
-        // Create empty list if character is not in dictionary
-        if (!letterToIndexMap[character]) {
-            letterToIndexMap[character] = []
-        }
-
-        // Add index of char into dictionary
-        letterToIndexMap[character].push(charIndex);
-    }
-
-    return letterToIndexMap;
-}
 
 module.exports = router;

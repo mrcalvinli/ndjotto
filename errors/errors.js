@@ -23,4 +23,10 @@ guess.invalidLength = {
     message: 'The guess must be the correct length'
 };
 
+guess.incorrectGuess = {
+    status: 400,
+    name: 'IncorrectGuess',
+    message: 'The guess you provided is not the correct answer'
+}
+
 module.exports = errors;
