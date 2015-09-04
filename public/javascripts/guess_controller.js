@@ -12,7 +12,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   // Private ////////////////////////////////////////////////////////
 
   var focusedInput_ = undefined;
-  var wordLength_ = 7;
+  var wordLength_ = 6;
   var numGuesses_ = 0;
   var totalGuesses_ = 10;
   var gameOver_ = false;
@@ -44,7 +44,8 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   })();
 
   var domElements_ = {
-    guessInput: "<table><tbody><tr><td>&rsaquo;&nbsp;</td><td width='100%'><input type='text' id='wordGuessInput'></td></tr></tbody></table>"
+    guessInput: "<table><tbody><tr><td>&rsaquo;&nbsp;</td><td width='100%'><input type='text' id='wordGuessInput'></td></tr></tbody></table>", 
+    spacer: "<br>"
   };
 
   var display_ = (function() {
@@ -64,22 +65,91 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
     };
 
     exports.showDescription = function() {
-      var description = "";
-      description += "Welcome to ND Jotto.  You will be attempting to decode the passcode into the mainframe.";
+      var line1Div = $("<div id='line1'></div>");
+      var line2Div = $("<div id='line2'></div>");
+      $('body').append(line1Div, 
+                       domElements_.spacer, 
+                       line2Div);
 
-      description += "<br> <br> DO NOT REFRESH THE PAGE";
+      var line1 = "Hey, ^100 this is Ajax. ^750 Let me know when you're here. ";
+      var line2 = "^500 The mainframe can only be accessed from your physical location. ^1000 You’re going to need to guess the password. ^500 The only thing I can tell you now is that it is " + wordLength_ + " letters long, and an English word. ^500 If you guess a correct letter, or one in the correct position I can tell you if it’s correct^100.^100.^100.^500  hurry! ^300 <br> ^200 <br> ^100";
+      line2 += "Input your guess below: ^800"
 
-      description += "<br> <br> You will have " + totalGuesses_ + " login attempts before the system locks you out.";
-      description += "<br> However, on each login attempt, the system will give you information about how your input compares with the passcode in terms of: <br>";
-      description += "&nbsp; - number of letters your input shares in common with the passcode <br>";
-      description += "&nbsp; - number of letters your input has in the same position as the passcode <br>";
-      description += "&nbsp;&nbsp; ex: the words 'the' and 'she' both have an 'h' in the second position, and an 'e' in the third position";
-      description += "<br> <br> The only information you have about the passcode is that it is " + wordLength_ + " letters long, and that it is an English word.  Make sure your inputs are " + wordLength_ + " letters long."
+      $('#line1').typed({
+        strings: [line1], 
+        typeSpeed: 1, 
+        callback: function() {
+          setTimeout(function() {
+            $('#line1').append("[Enter]");
+          }, 1000);
 
-      description += "<br> <br> Input your guess below: ";
+          var firstEnter = function(e) {
+            if (e.keyCode == 13) {
+              $("#line2").typed({
+                strings: [line2], 
+                typeSpeed: 1, 
+                callback: function() {
+                  exports.addWordGuessInput();
+                }
+              });
 
-      $('body').append(description);
-      exports.addWordGuessInput();
+              $(document).off('keyup', firstEnter);
+            }
+          };
+
+          $(document).on('keyup', firstEnter);
+        }
+      });
+    };
+
+    exports.showGuessInfo = function(guess, callback) {
+      var correctLettersDiv = $("<div id='correctLetters'></div>");
+      var correctPositionsDiv = $("<div id='correctPositions'></div>");
+      $('body').append(correctLettersDiv, correctPositionsDiv);
+      correctLettersDiv.append('Number of correct letters: ');
+      scrollToBottom_();
+      setTimeout(function() {
+        correctLettersDiv.append(guess.correctLetters);
+        setTimeout(function() {
+          correctPositionsDiv.append('Number of letters in correct position: ');
+          scrollToBottom_();
+          setTimeout(function() {
+            correctPositionsDiv.append(guess.correctPositions);
+
+            $('#correctLetters').attr('id', '');
+            $('#correctPositionsDiv').attr('id', '');
+            if (callback !== undefined) {
+              setTimeout(callback, 500);
+            }
+          }, 500);
+        }, 500);
+      }, 500);
+    };
+
+    exports.showWinMessage = function() {
+      $('body').html('');
+      var winMessage = $("<div id='winMessage'></div>");
+      $('body').append(winMessage);
+      $('#winMessage').typed({
+        strings: ["We're in. ^500 Sit tight while the other hacker retrieves the bomb schematic."], 
+        typeSpeed: 1
+      });
+      scrollToBottom_();
+    };
+
+    exports.showLoseMessage = function() {
+      focusedInput_.blur();
+      disableFocusedInput_();
+      eventHandlers.offWordGuessInput();
+
+      // $('body').html('');
+      var loseMessage = $("<div id='loseMessage'><br></div>");
+      $('body').append(loseMessage);
+      scrollToBottom_();
+      $('#loseMessage').typed({
+        strings: ["Your position has been compromised. ^500 ABORT MISSION!!!"], 
+        typeSpeed: 1
+      });
     };
 
     return exports;
@@ -106,16 +176,34 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
     focusedInput_.focus();
   };
 
-  function incrementGuesses_() {
+  function checkGuess_(guess, wordData) {
+    gameOver_ = (guess.length == wordData.correctLetters && guess.length == wordData.correctPositions);
+    return gameOver_;
+  }
+
+  function incrementGuesses_(guess, wordData) {
     numGuesses_++;
     if (numGuesses_ >= totalGuesses_) {
       gameOver_ = true;
-      $('body').append('<br> <br>');
-      $('body').append('This account has been locked due to excessive login attempts');
-      focusedInput_.blur();
-      disableFocusedInput_();
-      eventHandlers.offWordGuessInput();
-    } 
+      display_.showLoseMessage();
+      
+    } else if (guess !== undefined && wordData !== undefined && checkGuess_(guess, wordData)) {
+      display_.showWinMessage();
+    }
+  };
+
+  function scrollToBottom_() {
+    window.scrollTo(0, document.body.scrollHeight);
+  };
+
+  function sizingJS() {
+
+  };
+
+  function responsiveJS() {
+    sizingJS();
+
+    scrollToBottom_();
   };
 
   var init = (function() {
@@ -124,6 +212,11 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
     setViewModel();
 
     setFocusedInput_($('#passwordInput'));
+
+    sizingJS();
+    $(window).resize(function() {
+      responsiveJS();
+    });
   })();
 
   /**
@@ -157,24 +250,13 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
         if (e.keyCode == 13) {
           var guess = $(this).val();
 
-          ajax_.getGuessResults(guess).done(function(data) {
-            incrementGuesses_();
+          ajax_.getGuessResults(guess).done(function(wordData) {
+            incrementGuesses_(guess, wordData);
 
             if (!gameOver_) {
-              $('body').append('Number of correct letters: ' +  data.correctLetters);
-              $('body').append('<br>');
-              $('body').append('Number of letters in correct position: ' + data.correctPositions);
-              $('body').append('<br>');
-            }
-
-            if (guess.length == data.correctLetters && guess.length == data.correctPositions) {
-              gameOver_ = true;
-              $('body').html('');
-              $('body').append('Access granted, the passcode is: ' + guess);
-            } else {
-              if (!gameOver_) {
+              display_.showGuessInfo(wordData, function() {
                 display_.addWordGuessInput();
-              }
+              });
             }
           }).fail(function(err) {
             incrementGuesses_();

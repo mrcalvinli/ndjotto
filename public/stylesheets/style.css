@@ -25,3 +25,7 @@ input, textarea {
   margin-right: auto;
   padding: 20px;
 }
+
+.typed-cursor {
+  display: none;
+}
