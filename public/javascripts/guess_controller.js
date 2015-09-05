@@ -126,7 +126,8 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
       });
     };
 
-    exports.showGuessInfo = function(guess, callback) {
+    exports.showGuessInfo = function(guess) {
+      disableFocusedInput_();
       var correctLettersDiv = $("<div id='correctLetters'></div>");
       var correctPositionsDiv = $("<div id='correctPositions'></div>");
       $('body').append(correctLettersDiv, correctPositionsDiv);
@@ -142,9 +143,10 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
 
             $('#correctLetters').attr('id', '');
             $('#correctPositionsDiv').attr('id', '');
-            if (callback !== undefined) {
-              setTimeout(callback, 500);
-            }
+            setTimeout(function() {
+              enableFocusedInput_();
+              exports.addWordGuessInput();
+            }, 500);
           }, 500);
         }, 500);
       }, 500);
@@ -170,9 +172,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
       gameOver_ = true;
       stopTimer_();
 
-      focusedInput_.blur();
-      disableFocusedInput_();
-      eventHandlers.offWordGuessInput();
+      deactivateInput_();
 
       // $('body').html('');
       var loseMessage = $("<div id='loseMessage'><br></div>");
@@ -207,6 +207,12 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   function disableFocusedInput_() {
     if (focusedInput_ !== undefined) {
       focusedInput_.prop('disabled', true);
+    }
+  };
+
+  function enableFocusedInput_() {
+    if (focusedInput_ !== undefined) {
+      focusedInput_.prop('disabled', false);
     }
   };
 
@@ -250,6 +256,18 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   function stopTimer_() {
     clearInterval(timerInterval_);
     $("#timer").remove();
+  };
+
+  function deactivateInput_() {
+    focusedInput_.blur();
+    disableFocusedInput_();
+    eventHandlers.offWordGuessInput();
+  };
+
+  function activateInput_() {
+    eventHandlers.onWordGuessInput();
+    enableFocusedInput_();
+    focusedInput_.focus();
   };
 
   function sizingJS() {
@@ -310,9 +328,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
             incrementGuesses_(guess, wordData);
 
             if (!gameOver_) {
-              display_.showGuessInfo(wordData, function() {
-                display_.addWordGuessInput();
-              });
+              display_.showGuessInfo(wordData);
             }
           }).fail(function(err) {
             incrementGuesses_();

@@ -36,7 +36,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
       });
     };
 
-    exports.postPassword = function() {
+    exports.postPWforBoard = function() {
 
     };
 
