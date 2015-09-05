@@ -1,30 +1,49 @@
 var express = require('express');
+var http = require('http');
 var app = express();
 
+var Errors = require('../errors/errors');
+
+var WORD_LENGTH = 5;
+
 var JOTTO_WORDS = [
-    'airbag', 'advice', 'atrium', 'barely', 'binder', 'brutal',
-    'cherry', 'cowboy', 'cactus', 'depict', 'driver', 'during',
-    'expose', 'employ', 'escape', 'fathom', 'flower', 'finale',
-    'goblin', 'gluten', 'gurgle', 'harass', 'hydrid', 'horror',
-    'illest', 'immune', 'inward', 'jagger', 'jingle', 'jungle',
-    'kernel', 'kraken', 'knotty', 'locust', 'larynx', 'lounge',
-    'mussel', 'maniac', 'magnum', 'nimble', 'needle', 'nobody',
-    'orphan', 'oxygen', 'outfit', 'pledge', 'piston', 'proton',
-    'quaker', 'queasy', 'quirky', 'render', 'runoff', 'rookie',
-    'surfer', 'safari', 'sprout', 'tingle', 'tittle', 'twenty',
-    'uptown', 'ultima', 'united', 'vanity', 'voyage', 'viagra',
-    'waning', 'wizard', 'wienie', 'yogurt', 'yonder', 'yellow'
+    'chump'
 ]
 
 module.exports.getWordLength = function() {
-    return JOTTO_WORDS[0].length;
+    return WORD_LENGTH;
 }
 
 module.exports.setWordIndex = function() {
-    app.locals.wordIndex = Math.floor(Math.random()*(JOTTO_WORDS.length));
+    app.locals.wordIndex = Math.floor(Math.random()*JOTTO_WORDS.length);
 }
 
-module.exports.getCorrectnessOfGuess = function(guess) {
+module.exports.getCorrectnessOfGuess = function(guess, callback) {
+    // var puzzleNum = app.locals.wordIndex;
+
+    // return http.get({
+    //     host: 'courses.csail.mit.edu',
+    //     path: '/6.005/jotto.py?puzzle=' + puzzleNum + '&guess=' + guess
+    // }, function(response) {
+    //     var results = '';
+    //     response.on('data', function(data) {
+    //         results += data;
+    //     });
+
+    //     response.on('end', function() {
+    //         if (results.indexOf('guess') === 0) {
+    //             results = results.replace('\n', '');
+    //             var splitResult = results.split(' ');
+    //             callback({
+    //                 correctLetters: splitResult[1],
+    //                 correctPositions: splitResult[2]
+    //             });
+    //         } else {
+    //             callback(undefined, Errors.guess.invalidGuess);
+    //         }
+    //     })
+    // });
+
     var expectedMap = getLetterToIndexMap(getCorrectWord());
     var guessedMap = getLetterToIndexMap(guess);
 

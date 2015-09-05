@@ -11,6 +11,18 @@ errors.unauthorized = {
 
 //====== Guess errors ==========================
 
+guess.notWord = {
+    status: 400,
+    name: 'NotWord',
+    message: 'The guess provided is not a word'
+}
+
+guess.containsNonLetters = {
+    status: 400,
+    name: 'ContainsNonLetters',
+    message: 'The guess must only contain letters'
+}
+
 guess.noInput = {
     status: 400,
     name: 'NoInput',
