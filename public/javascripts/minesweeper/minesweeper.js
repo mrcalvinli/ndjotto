@@ -119,6 +119,27 @@ var Minesweeper = function(numRows, numCols) {
     return boardStrings;
   }
 
+  exports.toBinaryString = function() {
+    var boardStrings = [];
+
+    for (var row = 0; row < exports.numRows; row++) {
+      var boardRow = [];
+      for (var col = 0; col < exports.numCols; col++) {
+        var square = squareBoard[row][col];
+
+        if (square.isBomb) {
+          boardRow.push(1);
+        } else {
+          boardRow.push(0);
+        }
+      }
+
+      boardStrings.push(boardRow);
+    }
+
+    return boardStrings;
+  };
+
   /**
    * If the square is on the board and is untouched, the square will 
    * be flag/unflag depending on the input 

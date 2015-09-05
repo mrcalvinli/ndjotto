@@ -36,6 +36,14 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
       });
     };
 
+    exports.postPassword = function() {
+
+    };
+
+    exports.postBoard = function() {
+
+    };
+
     return exports;
   })();
 
@@ -162,8 +170,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
     console.log("querying for password...");
     ajax_.getGameStatus().done(function(data) {
 
-      // TODO: uncomment
-      if (/*data.hasWon*/ true) {
+      if (data.hasWon) {
         jottoWon_ = true;
         onJottoComplete_();
       } else {
