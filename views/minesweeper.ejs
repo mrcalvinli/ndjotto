@@ -1,1 +1,16 @@
-<div></div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ND Jotto Puzzle</title>
+  <%- include partials/header.ejs %>
+  <script type="text/javascript" src="/javascripts/minesweeper/square.js"></script>
+  <script type="text/javascript" src="/javascripts/minesweeper/minesweeper.js"></script>
+  <script type="text/javascript" src='/javascripts/ndMinesController.js'></script>
+</head>
+<body ng-app='ndJottoApp' ng-controller='ndMinesController'>
+  Input the password: 
+  <br>
+  <input id='passwordInput' type='password'>
+  <br>
+</body>
+</html>

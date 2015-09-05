@@ -250,7 +250,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   function stopTimer_() {
     clearInterval(timerInterval_);
     $("#timer").remove();
-  }
+  };
 
   function sizingJS() {
 
