@@ -14,8 +14,16 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   var focusedInput_ = undefined;
   var wordLength_ = 6;
   var numGuesses_ = 0;
-  var totalGuesses_ = 10;
+  var totalGuesses_ = Infinity;
   var gameOver_ = false;
+  var isTimed_ = true;
+  var minutes_ = 10;
+  var seconds_ = 0;
+  var timer_ = undefined;
+  var timerInterval_ = undefined;
+  if (minutes_ || seconds_) {
+    timer_ = new Timer(seconds_, minutes_);
+  }
 
   var ajax_ = (function() {
     var exports = {};
@@ -40,6 +48,16 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
       });
     };
 
+    exports.postGuess = function(guess) {
+      return $.ajax({
+        url: '/api/gamestatus/won', 
+        method: 'POST', 
+        data: {
+          'guess': guess
+        }
+      });
+    };
+
     return exports;
   })();
 
@@ -51,11 +69,16 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   var display_ = (function() {
     var exports = {};
 
+    exports.showAttempts = function() {
+      if (totalGuesses_ != Infinity) {
+        $('body').append('<br>');
+        $('body').append((totalGuesses_ - numGuesses_) + " attempts remaining");
+      }
+    };
+
     exports.addWordGuessInput = function() {
       if (!gameOver_) {
         eventHandlers.offWordGuessInput();
-        $('body').append('<br>');
-        $('body').append((totalGuesses_ - numGuesses_) + " attempts remaining");
         $('#wordGuessInput').attr('id', '');
         $('body').append('<br>');
         $('body').append(domElements_.guessInput);
@@ -89,6 +112,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
                 strings: [line2], 
                 typeSpeed: 1, 
                 callback: function() {
+                  exports.showTimer();
                   exports.addWordGuessInput();
                 }
               });
@@ -126,7 +150,10 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
       }, 500);
     };
 
-    exports.showWinMessage = function() {
+    exports.showWinMessage = function(guess) {
+      gameOver_ = true;
+      stopTimer_();
+
       $('body').html('');
       var winMessage = $("<div id='winMessage'></div>");
       $('body').append(winMessage);
@@ -135,9 +162,14 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
         typeSpeed: 1
       });
       scrollToBottom_();
+
+      ajax_.postGuess(guess);
     };
 
     exports.showLoseMessage = function() {
+      gameOver_ = true;
+      stopTimer_();
+
       focusedInput_.blur();
       disableFocusedInput_();
       eventHandlers.offWordGuessInput();
@@ -150,6 +182,14 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
         strings: ["Your position has been compromised. ^500 ABORT MISSION!!!"], 
         typeSpeed: 1
       });
+    };
+
+    exports.showTimer = function() {
+      if (!$("#timer")[0]) {
+        $('body').append("<div id='timer'></div>");
+        startTimer_();
+      }
+      $('#timer').html(timer_.getDisplayTime());
     };
 
     return exports;
@@ -179,22 +219,38 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   function checkGuess_(guess, wordData) {
     gameOver_ = (guess.length == wordData.correctLetters && guess.length == wordData.correctPositions);
     return gameOver_;
-  }
+  };
 
   function incrementGuesses_(guess, wordData) {
     numGuesses_++;
     if (numGuesses_ >= totalGuesses_) {
-      gameOver_ = true;
       display_.showLoseMessage();
       
     } else if (guess !== undefined && wordData !== undefined && checkGuess_(guess, wordData)) {
-      display_.showWinMessage();
+      display_.showWinMessage(guess);
     }
   };
 
   function scrollToBottom_() {
     window.scrollTo(0, document.body.scrollHeight);
   };
+
+  function startTimer_() {
+    if (timer_ !== undefined) {
+      timerInterval_ = setInterval(function() {
+        timer_.decrementSeconds();
+        display_.showTimer();
+        if (timer_.minutes == 0 && timer_.seconds == 0) {
+          display_.showLoseMessage();
+        }
+      }, 1000);
+    }
+  };
+
+  function stopTimer_() {
+    clearInterval(timerInterval_);
+    $("#timer").remove();
+  }
 
   function sizingJS() {
 
