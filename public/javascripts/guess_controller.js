@@ -261,11 +261,12 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   function deactivateInput_() {
     focusedInput_.blur();
     disableFocusedInput_();
-    eventHandlers.offWordGuessInput();
+    if (gameOver_) {
+      eventHandlers.offWordGuessInput();
+    }
   };
 
   function activateInput_() {
-    eventHandlers.onWordGuessInput();
     enableFocusedInput_();
     focusedInput_.focus();
   };
