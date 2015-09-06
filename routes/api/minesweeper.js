@@ -11,6 +11,7 @@ var numRows = 8;
 var numCols = 8;
 
 var board;
+var wireColor = '';
 
 var PasswordChecker = require('../../utils/password_checker');
 
@@ -54,9 +55,22 @@ router.post('/color', function(req, res) {
     }
 
     if (numCorrect > 0.60*numExpectedBombs) {
-        res.status(200).send({color: 'color'});
+        res.status(200).send({color: wireColor});
     } else {
         var err = Errors.minesweeper.invalidBoard;
+        res.status(err.status).send(err);
+    }
+});
+
+router.post('/color/set', function(req, res) {
+    var color = req.body.color;
+    var password = req.body.password;
+
+    if (PasswordChecker.isCorrectPassword(password)) {
+        wireColor = color;
+        res.status(200).send({});
+    } else {
+        var err = Errors.unauthorized;
         res.status(err.status).send(err);
     }
 });
