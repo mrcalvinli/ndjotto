@@ -45,16 +45,21 @@ router.post('/color', function(req, res) {
     }
 
     //Loop through and check number of bombs marked correctly
-    var numCorrect = 0;
+    var isCorrect = true;
     for (var row = 0; row < numRows; row++) {
         for (var col = 0; col < numCols; col++) {
-            if (boardJSON[row][col] === 1 && board[row][col] === 1) {
-                numCorrect++;
+            if (boardJSON[row][col] !== board[row][col]) {
+                isCorrect = false;
+                break;
             }
+        }
+
+        if (!isCorrect) {
+            break;
         }
     }
 
-    if (numCorrect > 0.60*numExpectedBombs) {
+    if (isCorrect) {
         res.status(200).send({color: wireColor});
     } else {
         var err = Errors.minesweeper.invalidBoard;
