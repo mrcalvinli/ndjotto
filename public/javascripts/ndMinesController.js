@@ -16,7 +16,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
   var jottoWon_ = false;
   var minesweeper_ = undefined;
   var binaryBoard_ = undefined;
-  var color_ = undefined;
+  var wireNumber_ = undefined;
 
   var ajax_ = (function() {
     var exports = {};
@@ -147,9 +147,9 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
 
       // TODO: api call to get color
       ajax_.postBoard(binaryBoard_).done(function(data) {
-        color_ = data.color;
+        wireNumber_ = data.number;
 
-        message += "Done! ^750 Tell them to cut the " + color_ + " wire. ^300 Quick!";
+        message += "Done! ^750 Tell them to cut wire " + wireNumber_ + ". ^300 Quick!";
         $('#winMessage').typed({
           strings: [message], 
           typeSpeed: 1
