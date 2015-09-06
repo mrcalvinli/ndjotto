@@ -51,7 +51,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
     exports.postBoard = function(binaryBoard) {
       var board = JSON.stringify(binaryBoard);
       return $.ajax({
-        url: "/api/minesweeper/color", 
+        url: "/api/minesweeper/wirenum", 
         method: "POST", 
         data: {
           board: board
@@ -147,7 +147,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
 
       // TODO: api call to get color
       ajax_.postBoard(binaryBoard_).done(function(data) {
-        wireNumber_ = data.number;
+        wireNumber_ = data.wireNumber;
 
         message += "Done! ^750 Tell them to cut wire " + wireNumber_ + ". ^300 Quick!";
         $('#winMessage').typed({
