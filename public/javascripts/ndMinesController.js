@@ -15,6 +15,8 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
   var focusedInput_ = undefined;
   var jottoWon_ = false;
   var minesweeper_ = undefined;
+  var binaryBoard_ = undefined;
+  var color_ = undefined;
 
   var ajax_ = (function() {
     var exports = {};
@@ -36,12 +38,25 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
       });
     };
 
-    exports.postPWforBoard = function() {
-
+    exports.postPWforBoard = function(password) {
+      return $.ajax({
+        url: "/api/minesweeper/board", 
+        method: "POST", 
+        data: {
+          password: password
+        }
+      });
     };
 
-    exports.postBoard = function() {
-
+    exports.postBoard = function(binaryBoard) {
+      var board = JSON.stringify(binaryBoard);
+      return $.ajax({
+        url: "/api/minesweeper/color", 
+        method: "POST", 
+        data: {
+          board: board
+        }
+      });
     };
 
     return exports;
@@ -131,13 +146,16 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
       var message = "Fuck yeah! ^500 I’m decrypting the file now. ^500 Hold on for a moment. ^3500 <br> "
 
       // TODO: api call to get color
+      ajax_.postBoard(binaryBoard_).done(function(data) {
+        color_ = data.color;
 
-      message += "Done! ^750 Tell them to cut the [COLOR] wire. ^300 Quick!";
-      $('#winMessage').typed({
-        strings: [message], 
-        typeSpeed: 1
+        message += "Done! ^750 Tell them to cut the " + color_ + " wire. ^300 Quick!";
+        $('#winMessage').typed({
+          strings: [message], 
+          typeSpeed: 1
+        });
+        scrollToBottom_();
       });
-      scrollToBottom_();
     };
 
     exports.showLoseMessage = function() {
@@ -158,7 +176,7 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
   })();
 
   function initializeMinesweeper_() {
-    minesweeper_ = new Minesweeper(8, 8);
+    minesweeper_ = new Minesweeper(binaryBoard_);
     display_.displayMineBoard_();
   };
 
@@ -253,10 +271,17 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
     $('#passwordInput').on('keyup', function(e) {
       if (e.keyCode == 13) {
 
-        ajax_.postPassword($(this).val()).done(function(data) {
+        var pw = $('#passwordInput').val();
+
+        ajax_.postPassword(pw).done(function(data) {
           if (data.isCorrect) {
-            $('body').html('');
-            display_.showDescription();
+
+            ajax_.postPWforBoard(pw).done(function(data) {
+              console.log("data: ", data);
+              binaryBoard_ = data;
+              $('body').html('');
+              display_.showDescription();
+            });
           }
         });
 

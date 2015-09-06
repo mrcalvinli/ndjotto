@@ -1,4 +1,4 @@
-var Minesweeper = function(numRows, numCols) {
+var Minesweeper = function(board) {
   var exports = {};
 
   /**
@@ -6,13 +6,13 @@ var Minesweeper = function(numRows, numCols) {
    */
   var squareBoard = [];
 
-  var expectedBombsFraction = 40/256;
-  var totalSquares = numRows * numCols;
-  var numExpectedBombs = totalSquares * expectedBombsFraction;
-
   //Size of board
-  exports.numRows = numRows;
-  exports.numCols = numCols;
+  exports.numRows = board.length;
+  exports.numCols = board[0].length;
+
+  var expectedBombsFraction = 40/256;
+  var totalSquares = exports.numRows * exports.numCols;
+  var numExpectedBombs = totalSquares * expectedBombsFraction;
 
   //Checks whether a dig has been made yet
   var hasDug = false;
@@ -30,7 +30,7 @@ var Minesweeper = function(numRows, numCols) {
     for (var row = 0; row < exports.numRows; row++) {
       var squareBoardRow = [];
       for (var col = 0; col < exports.numCols; col++) {
-        var isBomb = Math.random() < bombProbability;
+        var isBomb = (board[row][col] === 1);
         squareBoardRow.push(Square(isBomb));
       }
 

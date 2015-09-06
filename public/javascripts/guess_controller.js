@@ -12,7 +12,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
   // Private ////////////////////////////////////////////////////////
 
   var focusedInput_ = undefined;
-  var wordLength_ = 6;
+  var wordLength_ = 5;
   var numGuesses_ = 0;
   var totalGuesses_ = Infinity;
   var gameOver_ = false;
@@ -54,6 +54,16 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
         method: 'POST', 
         data: {
           'guess': guess
+        }
+      });
+    };
+
+    exports.resetWord = function(password) {
+      return $.ajax({
+        url: '/api/gamestatus/reset', 
+        method: 'POST', 
+        data: {
+          'password': password
         }
       });
     };
@@ -309,10 +319,14 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
     $('#passwordInput').on('keyup', function(e) {
       if (e.keyCode == 13) {
 
-        ajax_.postPassword($(this).val()).done(function(data) {
+        var pw = $(this).val();
+
+        ajax_.postPassword(pw).done(function(data) {
           if (data.isCorrect) {
-            $('body').html('');
-            display_.showDescription();
+            ajax_.resetWord(pw).done(function(data) {
+              $('body').html('');
+              display_.showDescription();
+            });
           }
         });
 
