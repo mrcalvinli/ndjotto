@@ -277,7 +277,6 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
           if (data.isCorrect) {
 
             ajax_.postPWforBoard(pw).done(function(data) {
-              console.log("data: ", data);
               binaryBoard_ = data;
               $('body').html('');
               display_.showDescription();
