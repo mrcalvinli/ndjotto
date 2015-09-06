@@ -1,4 +1,4 @@
-var Minesweeper = function() {
+var Minesweeper = function(numRows, numCols) {
   var exports = {};
 
   /**
@@ -6,11 +6,13 @@ var Minesweeper = function() {
    */
   var squareBoard = [];
 
-  var numExpectedBombs = 40;
+  var expectedBombsFraction = 40/256;
+  var totalSquares = numRows * numCols;
+  var numExpectedBombs = totalSquares * expectedBombsFraction;
 
   //Size of board
-  var numCols = 16;
-  var numRows = 16;
+  exports.numRows = numRows;
+  exports.numCols = numCols;
 
   //Checks whether a dig has been made yet
   var hasDug = false;
@@ -22,12 +24,12 @@ var Minesweeper = function() {
    *        bomb, 1 denoting bomb
    */
   var createRandomBoard = function() {
-    var bombProbability = numExpectedBombs/(numCols * numRows);
+    var bombProbability = numExpectedBombs/(exports.numCols * exports.numRows);
 
     // Loop through and create each square
-    for (var row = 0; row < numRows; row++) {
+    for (var row = 0; row < exports.numRows; row++) {
       var squareBoardRow = [];
-      for (var col = 0; col < numCols; col++) {
+      for (var col = 0; col < exports.numCols; col++) {
         var isBomb = Math.random() < bombProbability;
         squareBoardRow.push(Square(isBomb));
       }
@@ -57,7 +59,7 @@ var Minesweeper = function() {
     for (var dx = -1; dx < 2; dx++) {
       for (var dy = -1; dy < 2; dy++) {
         //Make sure it's not counting itself (dx=dy=0 and the coordinates are on the board)
-        if ((dx != 0 || dy != 0) && i+dx >= 0 && i+dx < numCols && j+dy >= 0 && j+dy < numRows) {
+        if ((dx != 0 || dy != 0) && i+dx >= 0 && i+dx < exports.numCols && j+dy >= 0 && j+dy < exports.numRows) {
           var square = squareBoard[j+dy][i+dx];
           if (square.isBomb) {
             count++;
@@ -87,16 +89,16 @@ var Minesweeper = function() {
   exports.toString = function() {
     var boardStrings = [];
 
-    for (var row = 0; row < numRows; row++) {
+    for (var row = 0; row < exports.numRows; row++) {
       var boardRowString = '';
-      for (var col = 0; col < numCols; col++) {
+      for (var col = 0; col < exports.numCols; col++) {
         var square = squareBoard[row][col];
         var squareRep = '';
 
         if (square.flagged) {
           squareRep = 'F';
         } else if (!square.touched) {
-          squareRep = '-';
+          squareRep = 'x';
         } else {
           var numBombs = getBombCount(col, row);
           if (numBombs === 0) {
@@ -108,7 +110,7 @@ var Minesweeper = function() {
 
         // Concat with return string
         boardRowString += squareRep;
-        if (col != numCols - 1) {
+        if (col != exports.numCols - 1) {
           boardRowString += ' ';
         }
       }
@@ -119,6 +121,27 @@ var Minesweeper = function() {
     return boardStrings;
   }
 
+  exports.toBinaryString = function() {
+    var boardStrings = [];
+
+    for (var row = 0; row < exports.numRows; row++) {
+      var boardRow = [];
+      for (var col = 0; col < exports.numCols; col++) {
+        var square = squareBoard[row][col];
+
+        if (square.isBomb) {
+          boardRow.push(1);
+        } else {
+          boardRow.push(0);
+        }
+      }
+
+      boardStrings.push(boardRow);
+    }
+
+    return boardStrings;
+  };
+
   /**
    * If the square is on the board and is untouched, the square will 
    * be flag/unflag depending on the input 
@@ -128,19 +151,19 @@ var Minesweeper = function() {
    * @param j referring to the y value (row)
    * @return String rep of the board
    */
-  exports.flagAction = function(flag, i, j) {
+  exports.flagAction = function(i, j) {
     //Only modify if coordinates are on board
-    if (i >= 0 && i < numCols && j >= 0 && j < numRows) {
+    if (i >= 0 && i < exports.numCols && j >= 0 && j < exports.numRows) {
       var square = squareBoard[j][i];
 
       //Only change flagged if different from input flag and untouched
-      if (square.flagged !== flag && !square.touched) {
-        square.flagged = flag;
+      if (!square.touched) {
+        square.flagged = !square.flagged;
       }
     }
 
     return exports.toString();
-  }
+  };
 
   /**
    * If the square is on the board and is untouched, it will
@@ -167,7 +190,7 @@ var Minesweeper = function() {
           var new_x = i + dx;
           var new_y = j + dy;
 
-          if (new_x >= 0 && new_x < numCols && new_y >= 0 && new_y < numRows) {
+          if (new_x >= 0 && new_x < exports.numCols && new_y >= 0 && new_y < exports.numRows) {
             var square = squareBoard[new_y][new_x];
             square.isBomb = false;
           }
@@ -178,7 +201,7 @@ var Minesweeper = function() {
     }
 
     //Must be inside board
-    if (i >= 0 && i < numCols && j >= 0 && j < numRows) {
+    if (i >= 0 && i < exports.numCols && j >= 0 && j < exports.numRows) {
       var square = squareBoard[j][i];
 
       //Only true if square was initially untouched and not flagged
@@ -209,7 +232,22 @@ var Minesweeper = function() {
     }
 
     return returnString || exports.toString();
-  }
+  };
+
+  exports.isBoardWon = function() {
+    for (var row = 0; row < exports.numRows; row++) {
+      for (var col = 0; col < exports.numCols; col++) {
+        var square = squareBoard[row][col];
+
+        if (!square.isBomb) {
+          if (!square.touched) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
 
   return exports;
 }
