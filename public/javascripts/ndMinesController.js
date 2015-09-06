@@ -167,14 +167,13 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
   };
 
   function checkJotto_() {
-    console.log("querying for password...");
     ajax_.getGameStatus().done(function(data) {
 
       if (data.hasWon) {
         jottoWon_ = true;
         onJottoComplete_();
       } else {
-        setTimeout(checkJotto_, 3000)
+        setTimeout(checkJotto_, 5000)
       }
     });
   };
@@ -274,16 +273,16 @@ ndJottoApp.controller('ndMinesController', function($scope, $rootScope) {
           var x = parseInt(guess[1]) - 1;
           var y = parseInt(guess[2]) - 1;
 
-          console.log("action: ", action);
-          console.log("x: ", x);
-          console.log("y: ", y);
-
           if (checkInput(action, x, y)) {
             if (action == 'f') {
               var boardStrings = minesweeper_.flagAction(x, y);
-              display_.displayMineBoard_(boardStrings);
             } else if (action == 'd') {
               var boardStrings = minesweeper_.dig(x, y);
+            }
+
+            if (minesweeper_.isBoardWon()) {
+              display_.showWinMessage();
+            } else {
               display_.displayMineBoard_(boardStrings);
             }
           } else {

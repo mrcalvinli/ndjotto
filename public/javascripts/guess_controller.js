@@ -95,7 +95,7 @@ ndJottoApp.controller('guessCtrl', function($scope, $rootScope) {
                        line2Div);
 
       var line1 = "Hey, ^100 this is Ajax. ^750 Let me know when you're here. ";
-      var line2 = "^500 The mainframe can only be accessed from your physical location. ^1000 You’re going to need to guess the password. ^500 The only thing I can tell you now is that it is " + wordLength_ + " letters long, and an English word. ^500 If you guess a correct letter, or one in the correct position I can tell you if it’s correct^100.^100.^100.^500  hurry! ^300 <br> ^200 <br> ^100";
+      var line2 = "^500 The mainframe can only be accessed from your physical location. ^1000 You’re going to need to guess the password. ^500 The only thing I can tell you now is that it is " + wordLength_ + " letters long, and an English word. ^500 If you guess a correct letter, or one in the correct position I can tell you if it’s correct^100.^100.^100.^500 You have " + minutes_ + " minutes before the system locks you out, ^500 hurry! ^300 <br> ^200 <br> ^100";
       line2 += "Input your guess below: ^800"
 
       $('#line1').typed({

@@ -6,7 +6,9 @@ var Minesweeper = function(numRows, numCols) {
    */
   var squareBoard = [];
 
-  var numExpectedBombs = 40;
+  var expectedBombsFraction = 40/256;
+  var totalSquares = numRows * numCols;
+  var numExpectedBombs = totalSquares * expectedBombsFraction;
 
   //Size of board
   exports.numRows = numRows;
@@ -161,7 +163,7 @@ var Minesweeper = function(numRows, numCols) {
     }
 
     return exports.toString();
-  }
+  };
 
   /**
    * If the square is on the board and is untouched, it will
@@ -230,7 +232,22 @@ var Minesweeper = function(numRows, numCols) {
     }
 
     return returnString || exports.toString();
-  }
+  };
+
+  exports.isBoardWon = function() {
+    for (var row = 0; row < exports.numRows; row++) {
+      for (var col = 0; col < exports.numCols; col++) {
+        var square = squareBoard[row][col];
+
+        if (!square.isBomb) {
+          if (!square.touched) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
 
   return exports;
 }
