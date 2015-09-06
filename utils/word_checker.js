@@ -7,7 +7,18 @@ var Errors = require('../errors/errors');
 var WORD_LENGTH = 5;
 
 var JOTTO_WORDS = [
-    'chump'
+    'agile', 'axiom', 'ankle', 'brown', 'bowel', 'basil',
+    'chump', 'colon', 'chasm', 'dummy', 'dunce', 'draft',
+    'elope', 'excel', 'enemy', 'filth', 'fluid', 'fully',
+    'geese', 'goofy', 'group', 'hippo', 'humid', 'hefty',
+    'infer', 'input', 'imply', 'jaunt', 'jewel', 'joule',
+    'koala', 'karma', 'khaki', 'login', 'lever', 'logic',
+    'mourn', 'music', 'musty', 'nasty', 'niece', 'noose',
+    'opium', 'organ', 'ozone', 'penis', 'porch', 'proxy',
+    'quart', 'quail', 'quirk', 'rhino', 'remix', 'rogue',
+    'slush', 'style', 'swift', 'trump', 'twist', 'tummy',
+    'urine', 'upper', 'unite', 'vixen', 'vital', 'venom',
+    'worst', 'wrong', 'would', 'yacht', 'yearn', 'yucky'
 ]
 
 module.exports.getWordLength = function() {
@@ -19,31 +30,6 @@ module.exports.setWordIndex = function() {
 }
 
 module.exports.getCorrectnessOfGuess = function(guess, callback) {
-    // var puzzleNum = app.locals.wordIndex;
-
-    // return http.get({
-    //     host: 'courses.csail.mit.edu',
-    //     path: '/6.005/jotto.py?puzzle=' + puzzleNum + '&guess=' + guess
-    // }, function(response) {
-    //     var results = '';
-    //     response.on('data', function(data) {
-    //         results += data;
-    //     });
-
-    //     response.on('end', function() {
-    //         if (results.indexOf('guess') === 0) {
-    //             results = results.replace('\n', '');
-    //             var splitResult = results.split(' ');
-    //             callback({
-    //                 correctLetters: splitResult[1],
-    //                 correctPositions: splitResult[2]
-    //             });
-    //         } else {
-    //             callback(undefined, Errors.guess.invalidGuess);
-    //         }
-    //     })
-    // });
-
     var expectedMap = getLetterToIndexMap(getCorrectWord());
     var guessedMap = getLetterToIndexMap(guess);
 

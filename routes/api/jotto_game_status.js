@@ -3,7 +3,7 @@ var router = express.Router();
 
 var Errors = require('../../errors/errors');
 var PasswordChecker = require('../../utils/password_checker');
-var GameStatusHelper = require('../../utils/game_status');
+var GameStatusHelper = require('../../utils/jotto_game_status');
 var WordChecker = require('../../utils/word_checker');
 
 router.get('/', function(req, res) {

@@ -7,9 +7,10 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var loginApi = require('./routes/api/login');
 var guessApi = require('./routes/api/guess');
-var gameStatusApi = require('./routes/api/game_status');
+var gameStatusApi = require('./routes/api/jotto_game_status');
+var minesweeperApi = require('./routes/api/minesweeper');
 
-var GameStatus = require('./utils/game_status');
+var GameStatus = require('./utils/jotto_game_status');
 var WordChecker = require('./utils/word_checker');
 
 var app = express();
@@ -34,6 +35,7 @@ app.use('/', routes);
 app.use('/api/login', loginApi);
 app.use('/api/guess', guessApi);
 app.use('/api/gamestatus', gameStatusApi);
+app.use('/api/minesweeper', minesweeperApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -69,6 +69,7 @@ function readLines(input, func) {
 }
 
 function writeWordsToMap(line) {
+  line = line.replace(/(\r\n|\n|\r)/gm, '');
   var words = line.split(' ');
   for (var i = 0; i < words.length; i++) {
     var word = words[i].toLowerCase();

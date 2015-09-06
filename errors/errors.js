@@ -1,5 +1,6 @@
 var errors = {};
 var guess = errors.guess = {};
+var minesweeper = errors.minesweeper = {};
 
 //====== General errors ========================
 
@@ -39,6 +40,14 @@ guess.incorrectGuess = {
     status: 400,
     name: 'IncorrectGuess',
     message: 'The guess you provided is not the correct answer'
+}
+
+//====== Minesweeper Errors ====================
+
+minesweeper.invalidBoard = {
+    status: 400,
+    name: 'InvalidBoard',
+    message: 'Board inputed was invalid'
 }
 
 module.exports = errors;
