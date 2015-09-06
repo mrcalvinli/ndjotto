@@ -6,9 +6,9 @@ var Errors = require('../../errors/errors');
 var app = express();
 
 //Constants
-var numExpectedBombs = 40;
-var numRows = 16;
-var numCols = 16;
+var numExpectedBombs = 10;
+var numRows = 8;
+var numCols = 8;
 
 var board;
 
@@ -30,10 +30,15 @@ router.post('/board', function(req, res) {
 router.post('/color', function(req, res) {
     var solvedBoard = req.body.board;
 
-    console.log(solvedBoard)
-    console.log(solvedBoard.length);
+    if (!solvedBoard) { //|| solvedBoard.length !== numRows || solvedBoard[0].length !== numCols) {
+        var err = Errors.minesweeper.invalidBoard;
+        return res.status(err.status).send(err);
+    }
 
-    if (!solvedBoard || solvedBoard.length !== numRows || solvedBoard[0].length !== numCols) {
+    //Parse board into JSON
+    var boardJSON = JSON.parse(solvedBoard);
+
+    if (boardJSON.length !== numRows || boardJSON[0].length !== numCols) {
         var err = Errors.minesweeper.invalidBoard;
         return res.status(err.status).send(err);
     }
@@ -42,7 +47,7 @@ router.post('/color', function(req, res) {
     var numCorrect = 0;
     for (var row = 0; row < numRows; row++) {
         for (var col = 0; col < numCols; col++) {
-            if (solvedBoard[row][col] === 1 && board[row][col] === 1) {
+            if (boardJSON[row][col] === 1 && board[row][col] === 1) {
                 numCorrect++;
             }
         }
